@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PhotonMatchPuzzleCreatorClass</class>
+ <widget class="QMainWindow" name="PhotonMatchPuzzleCreatorClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>597</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Photon Match Puzzle Creator</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLineEdit" name="langNameEntryLeft">
+      <property name="toolTip">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>English</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPlainTextEdit" name="wordPairsEntryLeft">
+      <property name="placeholderText">
+       <string>crab</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QPlainTextEdit" name="wordPairsEntryRight">
+      <property name="placeholderText">
+       <string>le crabe</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="langNameEntryRight">
+      <property name="placeholderText">
+       <string>French</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3" rowspan="2">
+     <widget class="QTextBrowser" name="ttsExportLog"/>
+    </item>
+    <item row="0" column="3">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>TextToSpeech Export Log</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2" rowspan="3">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QLineEdit" name="catNameEntry">
+      <property name="placeholderText">
+       <string>Animals</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>597</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuExport">
+    <property name="title">
+     <string>Export</string>
+    </property>
+    <widget class="QMenu" name="menuSettings">
+     <property name="title">
+      <string>Settings</string>
+     </property>
+     <addaction name="actionSetbal4webPath"/>
+     <addaction name="actionSetCreatorName"/>
+     <addaction name="actionSetLanguageCodeTable"/>
+     <addaction name="actionIncludeTextToSpeech"/>
+    </widget>
+    <addaction name="actionExportWordPairs"/>
+    <addaction name="menuSettings"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuExport"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionSaveAs">
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open...</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionExportWordPairs">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Export Word Pairs</string>
+   </property>
+  </action>
+  <action name="actionIncludeTextToSpeech">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Include TextToSpeech</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionSetbal4webPath">
+   <property name="text">
+    <string>Set bal4web Path...</string>
+   </property>
+  </action>
+  <action name="actionSetCreatorName">
+   <property name="text">
+    <string>Set Creator Name</string>
+   </property>
+  </action>
+  <action name="actionSetLanguageCodeTable">
+   <property name="text">
+    <string>Edit Language Code Table</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="PhotonMatchPuzzleCreator.qrc"/>
+ </resources>
+ <connections/>
+</ui>

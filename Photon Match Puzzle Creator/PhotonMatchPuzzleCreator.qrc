@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/PhotonMatchPuzzleCreator">
+        <file>Icon/photon-match-puzzle-creator-program-icon.ico</file>
+    </qresource>
+</RCC>
