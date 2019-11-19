@@ -9,29 +9,6 @@
 #include <QClipboard>
 #include <QTextBlock>
 
-// General aim of this tool...
-// - Save and Load category projects
-// - Export word pairs as a text file with UTF-16 BE encoding
-// - Format the word pairs with commas (as done manually) and give each word a unique hash (ex: <12084003130923215346>brooch)
-// - If TextToSpeech is enabled, we also create export for audio by tapping into bal4web with command line calls.
-// - For name of wav file, we use the unique hash (this way it will be filename friendly regardless of language)...
-//   and it can be matched easily when Photon Match is looking for an audio file that is a companion to a word.
-
-// TODO:
-// Settings:
-//    - Set up text input for Creator Name DONE
-//    - Set up folder selection for bal4web path DONE
-//    - Set up TTS toggle to actually factor in once export is implemented DONE
-//    - Set up adding to language code table DONE
-//
-// Export:
-//    - Text: Save word pairs to text file with UTF-16 BE encoding, inserting unique hash before each word DONE
-//    - Text: Use creator name, language names, and category name for naming text file DONE
-//    - Text: mkpath for text file locally using language names and category name (e.g. WordPairs > English-French > Animals) DONE
-//    - TTS: mkpath for wav files locally using language names and category name (e.g. TextToSpeech > English-French > Animals) DONE
-//    - TTS: if wav file for word doesn't exist (named as unique hash), run process command for it, name it with unique hash DONE
-//    - TTS: Factor language code table into how and whether command is processed for a word. DONE
-
 PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 	: QMainWindow(parent)
 {
