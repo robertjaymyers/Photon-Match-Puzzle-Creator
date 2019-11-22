@@ -141,9 +141,8 @@ PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 		}
 
 		// Word Pairs Export
-		const QStringList wordPairsEntryLeftList = ui.wordPairsEntryLeft->toPlainText().split('\n', QString::SkipEmptyParts);
-		const QStringList wordPairsEntryRightList = ui.wordPairsEntryRight->toPlainText().split('\n', QString::SkipEmptyParts);
-		const QStringList wordPairsEntryCombinedList = wordPairsEntryLeftList + wordPairsEntryRightList;
+		const QStringList wordPairsEntryLeftList = ui.wordPairsEntryLeft->toPlainText().split('\n', QString::SkipEmptyParts).replaceInStrings(",", "[code]comma[/code]");
+		const QStringList wordPairsEntryRightList = ui.wordPairsEntryRight->toPlainText().split('\n', QString::SkipEmptyParts).replaceInStrings(",", "[code]comma[/code]");
 
 		if (wordPairsEntryLeftList.length() != wordPairsEntryRightList.length())
 		{
@@ -180,6 +179,9 @@ PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 		}
 
 		// TextToSpeech Export
+		const QStringList wordPairsEntryLeftListTTS = ui.wordPairsEntryLeft->toPlainText().split('\n', QString::SkipEmptyParts);
+		const QStringList wordPairsEntryRightListTTS = ui.wordPairsEntryRight->toPlainText().split('\n', QString::SkipEmptyParts);
+
 		if (ui.actionIncludeTextToSpeech->isChecked())
 		{
 			if (languageCodeTable[ui.langNameEntryLeft->text()].isEmpty() ||
@@ -197,45 +199,45 @@ PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 			compositeDir.mkpath(".");
 
 			ui.ttsExportLog->clear();
-			int entriesRemainingNum = wordPairsEntryLeftList.length() + wordPairsEntryRightList.length();
+			int entriesRemainingNum = wordPairsEntryLeftListTTS.length() + wordPairsEntryRightListTTS.length();
 			int entriesProcessed = 0;
 			int entriesIgnored = 0;
 			const QString langValLeft = languageCodeTable[ui.langNameEntryLeft->text()];
-			for (auto& word : wordPairsEntryLeftList)
+			for (int i = 0; i < wordPairsEntryLeftList.length(); i++)
 			{
 				QString wordOutputPath = compositePath;
-				wordOutputPath.append("/" + generateHash64HexOnly(word.toStdString() + ui.langNameEntryLeft->text().toStdString() + creatorName.toStdString(), true) + ".wav");
+				wordOutputPath.append("/" + generateHash64HexOnly(wordPairsEntryLeftList[i].toStdString() + ui.langNameEntryLeft->text().toStdString() + creatorName.toStdString(), true) + ".wav");
 				if (!QFile::exists(wordOutputPath))
 				{
-					process.get()->start("C:/WINDOWS/system32/cmd.exe", QStringList() << "/C" << bal4webPath + "/bal4web.exe" << "-t" << word << "-w" << wordOutputPath << "-s" << "Google" << "-l" << langValLeft);
+					process.get()->start("C:/WINDOWS/system32/cmd.exe", QStringList() << "/C" << bal4webPath + "/bal4web.exe" << "-t" << wordPairsEntryLeftListTTS[i] << "-w" << wordOutputPath << "-s" << "Google" << "-l" << langValLeft);
 					process.get()->waitForFinished();
-					ui.ttsExportLog->append(word + " wav file created. " + QString::number(entriesRemainingNum) + " files left to process.");
+					ui.ttsExportLog->append(wordPairsEntryLeftListTTS[i] + " wav file created. " + QString::number(entriesRemainingNum) + " files left to process.");
 					this->repaint();
 					entriesRemainingNum--;
 					entriesProcessed++;
 				}
 				else
 				{
-					ui.ttsExportLog->append("An audio file with " + word + "'s hash already exists.");
+					ui.ttsExportLog->append("An audio file with " + wordPairsEntryLeftListTTS[i] + "'s hash already exists.");
 					entriesIgnored++;
 				}
 			}
 			const QString langValRight = languageCodeTable[ui.langNameEntryRight->text()];
-			for (auto& word : wordPairsEntryRightList)
+			for (int i = 0; i < wordPairsEntryRightList.length(); i++)
 			{
 				QString wordOutputPath = compositePath;
-				wordOutputPath.append("/" + generateHash64HexOnly(word.toStdString() + ui.langNameEntryRight->text().toStdString() + creatorName.toStdString(), true) + ".wav");
+				wordOutputPath.append("/" + generateHash64HexOnly(wordPairsEntryRightList[i].toStdString() + ui.langNameEntryRight->text().toStdString() + creatorName.toStdString(), true) + ".wav");
 				if (!QFile::exists(wordOutputPath))
 				{
-					process.get()->start("C:/WINDOWS/system32/cmd.exe", QStringList() << "/C" << bal4webPath + "/bal4web.exe" << "-t" << word << "-w" << wordOutputPath << "-s" << "Google" << "-l" << langValRight);
+					process.get()->start("C:/WINDOWS/system32/cmd.exe", QStringList() << "/C" << bal4webPath + "/bal4web.exe" << "-t" << wordPairsEntryRightListTTS[i] << "-w" << wordOutputPath << "-s" << "Google" << "-l" << langValRight);
 					process.get()->waitForFinished();
-					ui.ttsExportLog->append(word + " wav file created. " + QString::number(entriesRemainingNum) + " files left to process.");
+					ui.ttsExportLog->append(wordPairsEntryRightListTTS[i] + " wav file created. " + QString::number(entriesRemainingNum) + " files left to process.");
 					entriesRemainingNum--;
 					entriesProcessed++;
 				}
 				else
 				{
-					ui.ttsExportLog->append("An audio file with " + word + "'s hash already exists.");
+					ui.ttsExportLog->append("An audio file with " + wordPairsEntryRightListTTS[i] + "'s hash already exists.");
 					entriesRemainingNum--;
 					entriesIgnored++;
 				}
@@ -345,9 +347,9 @@ void PhotonMatchPuzzleCreator::fileOpen()
 					else if (line.contains("catNameEntry="))
 						ui.catNameEntry->setText(QString::fromStdString(extractSubstringInbetween("=", "", line.toStdString())));
 					else if (line.contains("wordPairsEntryLeft="))
-						ui.wordPairsEntryLeft->insertPlainText(QString::fromStdString(extractSubstringInbetween("=", "", line.toStdString())).replace(",", "\n"));
+						ui.wordPairsEntryLeft->insertPlainText(extractSubstringInbetweenQt("=", "", line).replace(",", "\n").replace("[code]comma[/code]", ","));
 					else if (line.contains("wordPairsEntryRight="))
-						ui.wordPairsEntryRight->insertPlainText(QString::fromStdString(extractSubstringInbetween("=", "", line.toStdString())).replace(",", "\n"));
+						ui.wordPairsEntryRight->insertPlainText(extractSubstringInbetweenQt("=", "", line).replace(",", "\n").replace("[code]comma[/code]", ","));
 				}
 			}
 			fileRead.close();
@@ -417,12 +419,12 @@ bool PhotonMatchPuzzleCreator::fileSave(const QString &filename)
 		qStream << "catNameEntry=" + ui.catNameEntry->text();
 		qStream << linebreakStr;
 		qStream << "wordPairsEntryLeft=";
-		QStringList wordPairsEntryLeftList = ui.wordPairsEntryLeft->toPlainText().split('\n', QString::SkipEmptyParts);
+		QStringList wordPairsEntryLeftList = ui.wordPairsEntryLeft->toPlainText().split('\n', QString::SkipEmptyParts).replaceInStrings(",", "[code]comma[/code]");
 		for (auto& i : wordPairsEntryLeftList)
 			qStream << i + ",";
 		qStream << linebreakStr;
 		qStream << "wordPairsEntryRight=";
-		QStringList wordPairsEntryRight = ui.wordPairsEntryRight->toPlainText().split('\n', QString::SkipEmptyParts);
+		QStringList wordPairsEntryRight = ui.wordPairsEntryRight->toPlainText().split('\n', QString::SkipEmptyParts).replaceInStrings(",", "[code]comma[/code]");
 		for (auto& i : wordPairsEntryRight)
 			qStream << i + ",";
 		fileWrite.close();
