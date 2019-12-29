@@ -36,9 +36,12 @@ private:
 	void prefLoad();
 	void prefSave();
 
+	enum class ExtractSubstringStyle { EXTRACT_FIRST, EXTRACT_ALL };
 	std::string extractSubstringInbetween(const std::string strBegin, const std::string strEnd, const std::string &strExtractFrom);
 	QString extractSubstringInbetweenQt(const QString strBegin, const QString strEnd, const QString &strExtractFrom);
-	
+	QString extractSubstringInbetweenQt(const QString strBegin, const QString strEnd, const QString &strExtractFrom, ExtractSubstringStyle extractSubstringStyle);
+	QString decodeHtmlEntities(const QString strToDecode);
+
 	// Set to TRUE for High Bit version and FALSE for normal version
 	QString generateHash64HexOnly(const std::string &strToHash, bool highBit);
 

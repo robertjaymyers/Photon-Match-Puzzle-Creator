@@ -256,6 +256,34 @@ PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 		}
 	});
 
+	/*connect(shortcutPasteAcrossBoxes.get(), &QShortcut::activated, this, [=]() {
+		QTextCursor cursor(ui.wordPairsEntryLeft->textCursor());
+		cursor.beginEditBlock();
+		QString clipboardText = QApplication::clipboard()->text();
+		QStringList clipboardTextStrList = clipboardText.split("</tr>", QString::SkipEmptyParts);
+		for (auto& clipboardTextStr : clipboardTextStrList)
+		{
+			QString leftStr = extractSubstringInbetweenQt("<td>", "</td>", clipboardTextStr, ExtractSubstringStyle::EXTRACT_FIRST);
+			QString rightStr = extractSubstringInbetweenQt("<b>", "</b>", clipboardTextStr, ExtractSubstringStyle::EXTRACT_FIRST);
+
+			leftStr = decodeHtmlEntities(leftStr);
+			rightStr = decodeHtmlEntities(rightStr);
+
+			qDebug() << cursor.blockNumber();
+
+			if (ui.wordPairsEntryLeft->document()->findBlockByLineNumber(cursor.blockNumber()).text().isEmpty())
+				ui.wordPairsEntryLeft->insertPlainText(leftStr + "\n");
+			else
+				ui.wordPairsEntryLeft->insertPlainText("\n" + leftStr + "\n");
+
+			if (ui.wordPairsEntryRight->document()->findBlockByLineNumber(cursor.blockNumber()).text().isEmpty())
+				ui.wordPairsEntryRight->insertPlainText(rightStr + "\n");
+			else
+				ui.wordPairsEntryRight->insertPlainText("\n" + rightStr + "\n");
+		}
+		cursor.endEditBlock();
+	});*/
+
 	connect(shortcutPasteAcrossBoxes.get(), &QShortcut::activated, this, [=]() {
 		QTextCursor cursor(ui.wordPairsEntryLeft->textCursor());
 		cursor.beginEditBlock();
@@ -547,7 +575,7 @@ std::string PhotonMatchPuzzleCreator::extractSubstringInbetween(const std::strin
 		while (strExtractFrom.find(strBegin, posFound) != std::string::npos)
 		{
 			int posBegin = strExtractFrom.find(strBegin, posFound) + strBegin.length();
-			int posEnd = strExtractFrom.find(strEnd, posBegin) + 1 - strEnd.length();
+			int posEnd = strExtractFrom.find(strEnd, posBegin);
 			extracted.append(strExtractFrom, posBegin, posEnd - posBegin);
 			posFound = posEnd;
 		}
@@ -555,7 +583,7 @@ std::string PhotonMatchPuzzleCreator::extractSubstringInbetween(const std::strin
 	else if (strBegin.empty() && !strEnd.empty())
 	{
 		int posBegin = 0;
-		int posEnd = strExtractFrom.find(strEnd, posBegin) + 1 - strEnd.length();
+		int posEnd = strExtractFrom.find(strEnd, posBegin);
 		extracted.append(strExtractFrom, posBegin, posEnd - posBegin);
 		posFound = posEnd;
 	}
@@ -579,7 +607,7 @@ QString PhotonMatchPuzzleCreator::extractSubstringInbetweenQt(const QString strB
 		while (strExtractFrom.indexOf(strBegin, posFound, Qt::CaseSensitive) != -1)
 		{
 			int posBegin = strExtractFrom.indexOf(strBegin, posFound, Qt::CaseSensitive) + strBegin.length();
-			int posEnd = strExtractFrom.indexOf(strEnd, posBegin, Qt::CaseSensitive) + 1 - strEnd.length();
+			int posEnd = strExtractFrom.indexOf(strEnd, posBegin, Qt::CaseSensitive);
 			extracted += strExtractFrom.mid(posBegin, posEnd - posBegin);
 			posFound = posEnd;
 		}
@@ -587,7 +615,7 @@ QString PhotonMatchPuzzleCreator::extractSubstringInbetweenQt(const QString strB
 	else if (strBegin.isEmpty() && !strEnd.isEmpty())
 	{
 		int posBegin = 0;
-		int posEnd = strExtractFrom.indexOf(strEnd, posBegin, Qt::CaseSensitive) + 1 - strEnd.length();
+		int posEnd = strExtractFrom.indexOf(strEnd, posBegin, Qt::CaseSensitive);
 		extracted += strExtractFrom.mid(posBegin, posEnd - posBegin);
 		posFound = posEnd;
 	}
@@ -599,6 +627,47 @@ QString PhotonMatchPuzzleCreator::extractSubstringInbetweenQt(const QString strB
 		posFound = posEnd;
 	}
 	return extracted;
+}
+
+QString PhotonMatchPuzzleCreator::extractSubstringInbetweenQt(const QString strBegin, const QString strEnd, const QString &strExtractFrom, ExtractSubstringStyle extractSubstringStyle)
+{
+	QString extracted = "";
+	int posFound = 0;
+
+	if (!strBegin.isEmpty() && !strEnd.isEmpty())
+	{
+		while (strExtractFrom.indexOf(strBegin, posFound, Qt::CaseSensitive) != -1)
+		{
+			int posBegin = strExtractFrom.indexOf(strBegin, posFound, Qt::CaseSensitive) + strBegin.length();
+			int posEnd = strExtractFrom.indexOf(strEnd, posBegin, Qt::CaseSensitive);
+			extracted += strExtractFrom.mid(posBegin, posEnd - posBegin);
+			posFound = posEnd;
+			if (extractSubstringStyle == ExtractSubstringStyle::EXTRACT_FIRST)
+				return extracted;
+		}
+	}
+	else if (strBegin.isEmpty() && !strEnd.isEmpty())
+	{
+		int posBegin = 0;
+		int posEnd = strExtractFrom.indexOf(strEnd, posBegin, Qt::CaseSensitive);
+		extracted += strExtractFrom.mid(posBegin, posEnd - posBegin);
+		posFound = posEnd;
+	}
+	else if (!strBegin.isEmpty() && strEnd.isEmpty())
+	{
+		int posBegin = strExtractFrom.indexOf(strBegin, posFound, Qt::CaseSensitive) + strBegin.length();
+		int posEnd = strExtractFrom.length();
+		extracted += strExtractFrom.mid(posBegin, posEnd - posBegin);
+		posFound = posEnd;
+	}
+	return extracted;
+}
+
+QString PhotonMatchPuzzleCreator::decodeHtmlEntities(const QString strToDecode)
+{
+	QTextDocument doc;
+	doc.setHtml(strToDecode);
+	return doc.toPlainText();
 }
 
 // Set to TRUE for High Bit version and FALSE for normal version
