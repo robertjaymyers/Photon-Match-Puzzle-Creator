@@ -5,6 +5,7 @@
 #include <memory>
 #include <QProcess>
 #include <QShortcut>
+#include <QCompleter>
 
 class PhotonMatchPuzzleCreator : public QMainWindow
 {
@@ -27,6 +28,7 @@ private:
 	QString bal4webPath;
 	QString creatorName;
 	std::map<QString, QString> languageCodeTable;
+	std::unique_ptr<QCompleter> languageListCompleter = std::make_unique<QCompleter>(this);
 
 	std::unique_ptr<QProcess> process = std::make_unique<QProcess>();
 	std::unique_ptr<QShortcut> shortcutPasteAcrossBoxes = std::make_unique<QShortcut>(QKeySequence(tr("Ctrl+Shift+V", "Paste Across")), this);

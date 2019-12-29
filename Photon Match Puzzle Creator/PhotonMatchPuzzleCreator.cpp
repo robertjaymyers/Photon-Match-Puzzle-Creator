@@ -8,6 +8,7 @@
 #include <QTextCursor>
 #include <QClipboard>
 #include <QTextBlock>
+#include <QStringListModel>
 
 PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 	: QMainWindow(parent)
@@ -18,6 +19,10 @@ PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 
 	setWindowTitle(winTitleUntitled + winTitlePlaceholder + " - " + winTitleProgramName);
 	statusBarInit();
+
+	languageListCompleter.get()->setCaseSensitivity(Qt::CaseInsensitive);
+	ui.langNameEntryLeft->setCompleter(languageListCompleter.get());
+	ui.langNameEntryRight->setCompleter(languageListCompleter.get());
 
 	if (QApplication::arguments().size() > 1)
 	{
@@ -103,6 +108,7 @@ PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 		QString newCodes = QInputDialog::getMultiLineText(this, tr("Edit Language Code Table"), tr("Key/Value Pair:"), existingCodes, &ok, Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
 		if (ok && !newCodes.isEmpty() && existingCodes != newCodes)
 		{
+			QStringList languageList;
 			languageCodeTable.clear();
 			QStringList newCodesList = newCodes.split('\n', QString::SkipEmptyParts);
 			for (auto& i : newCodesList)
@@ -110,7 +116,9 @@ PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 				QString langCodeKey = QString::fromStdString(extractSubstringInbetween("", "=", i.toStdString()));
 				QString langCodeVal = QString::fromStdString(extractSubstringInbetween("=", "", i.toStdString()));
 				languageCodeTable.insert(std::pair<QString, QString>(langCodeKey, langCodeVal));
+				languageList.append(langCodeKey);
 			}
+			languageListCompleter.get()->setModel(new QStringListModel(languageList));
 		}
 	});
 
@@ -202,7 +210,7 @@ PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 			int entriesRemainingNum = wordPairsEntryLeftListTTS.length() + wordPairsEntryRightListTTS.length();
 			int entriesProcessed = 0;
 			int entriesIgnored = 0;
-			const QString langValLeft = languageCodeTable[ui.langNameEntryLeft->text()];
+			const QString langValLeft = languageCodeTable.at(ui.langNameEntryLeft->text());
 			for (int i = 0; i < wordPairsEntryLeftList.length(); i++)
 			{
 				QString wordOutputPath = compositePath;
@@ -222,7 +230,7 @@ PhotonMatchPuzzleCreator::PhotonMatchPuzzleCreator(QWidget *parent)
 					entriesIgnored++;
 				}
 			}
-			const QString langValRight = languageCodeTable[ui.langNameEntryRight->text()];
+			const QString langValRight = languageCodeTable.at(ui.langNameEntryRight->text());
 			for (int i = 0; i < wordPairsEntryRightList.length(); i++)
 			{
 				QString wordOutputPath = compositePath;
@@ -486,6 +494,7 @@ void PhotonMatchPuzzleCreator::prefLoad()
 		QFile fileRead(appExecutablePath + "/languageCodeTable.txt");
 		if (fileRead.open(QIODevice::ReadOnly))
 		{
+			QStringList languageList;
 			QTextStream contents(&fileRead);
 			while (!contents.atEnd())
 			{
@@ -493,7 +502,9 @@ void PhotonMatchPuzzleCreator::prefLoad()
 				QString langCodeKey = QString::fromStdString(extractSubstringInbetween("", "=", line.toStdString()));
 				QString langCodeVal = QString::fromStdString(extractSubstringInbetween("=", "", line.toStdString()));
 				languageCodeTable.insert(std::pair<QString, QString>(langCodeKey, langCodeVal));
+				languageList.append(langCodeKey);
 			}
+			languageListCompleter.get()->setModel(new QStringListModel(languageList));
 		}
 		fileRead.close();
 	}
