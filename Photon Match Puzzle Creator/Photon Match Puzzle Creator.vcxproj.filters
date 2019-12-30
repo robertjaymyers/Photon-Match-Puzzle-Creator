@@ -56,4 +56,9 @@
   <ItemGroup>
     <Image Include="Icon\photon-match-puzzle-creator-program-icon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="COPYING.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
